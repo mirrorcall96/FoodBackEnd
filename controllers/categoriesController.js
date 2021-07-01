@@ -20,7 +20,10 @@ exports.categoryDetail = async (req, res, next) =>
 exports.categoriesList = async (req, res, next) => {
   try {
     const categories = await Category.findAll({
-      include: Ingredient,
+      include: {
+        model: Ingredient,
+        attributes: ["id"],
+      },
     });
     res.json(categories);
   } catch (e) {

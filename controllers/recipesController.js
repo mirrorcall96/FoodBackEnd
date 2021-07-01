@@ -22,7 +22,6 @@ exports.recipesList = async (req, res, next) => {
     const recipes = await Recipe.findAll({
       include: {
         model: Ingredient,
-        include: Category,
       },
     });
     res.json(recipes);
@@ -43,7 +42,14 @@ exports.recipeCreate = async (req, res, next) => {
   try {
     if (req.file) req.body.image = `http://localhost:8000/${req.file.path}`;
     const myRecipe = await Recipe.create(req.body);
-    //myRecipe.addIngredient(await Ingredient.findByPk(5));
+    let myIngrediants = await Ingredient.findAll({
+      where: {
+        id: req.body.ingredients.split(","),
+      },
+    });
+
+    myRecipe.setIngredients(myIngrediants, myIngrediants);
+    myRecipe.dataValues.Ingredients = myIngrediants;
     res.status(201).json(myRecipe);
   } catch (e) {
     next(e);
